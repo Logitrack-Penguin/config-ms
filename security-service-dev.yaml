@@ -1,0 +1,20 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: security-service
+  datasource:
+    url: "jdbc:mysql://security-database:3306/security_service?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
+    username: "${MYSQL_USER:admin_logitrack}"
+    password: "${DB_PASSWORD:12345}"
+    driver-class-name: "com.mysql.cj.jdbc.Driver"
+
+jwt:
+  secret: "${JWT_SECRET:clave_secreta_temporal_muy_larga_para_desarrollo}"
+  expiration: 86400000
+
+logging:
+  level:
+    root: INFO
+    ar.edu.unju.fi.arquitecturas.logitrack.securityservice: DEBUG

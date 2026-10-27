@@ -1,0 +1,20 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: configserver
+  profiles:
+    active: git
+  cloud:
+    config:
+      server:
+        git:
+          uri: "https://github.com/Logitrack-Penguin/config-ms.git"
+          default-label: "main"
+          clone-on-start: true
+
+logging:
+  level:
+    root: INFO
+    org.springframework.cloud.config: DEBUG
