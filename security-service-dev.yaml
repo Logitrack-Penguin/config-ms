@@ -18,3 +18,11 @@ logging:
   level:
     root: INFO
     ar.edu.unju.fi.arquitecturas.logitrack.securityservice: DEBUG
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8065/eureka/}
+  instance:
+    prefer-ip-address: true
