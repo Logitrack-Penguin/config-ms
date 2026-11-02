@@ -1,0 +1,40 @@
+server:
+  port: 8066
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8065/eureka/}
+  instance:
+    prefer-ip-address: true
+
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: shipment-route
+          uri: lb://shipment-service
+          predicates:
+            - Path=/applications/apishipment/**
+          filters:
+            - RewritePath=/applications/apishipment/(?<segment>.*), /$\{segment}
+
+        - id: courier-route
+          uri: lb://courier-service
+          predicates:
+            - Path=/applications/apicourier/**
+          filters:
+            - RewritePath=/applications/apicourier/(?<segment>.*), /$\{segment}
+
+        - id: security-route
+          uri: lb://security-service
+          predicates:
+            - Path=/applications/apisecurity/**
+          filters:
+            - RewritePath=/applications/apisecurity/(?<segment>.*), /$\{segment}
