@@ -32,7 +32,7 @@ resilience4j:
         permitted-number-of-calls-in-half-open-state: 3
         automatic-transition-from-open-to-half-open-enabled: true
         ignore-exceptions:
-          - ar.edu.unju.fi.arquitecturas.logitrack.shipment.client.exception.CourierNotFoundException
+          - ar.edu.unju.fi.arquitecturas.logitrack.shipmentservice.exception.CourierNoEncontradoException
   timelimiter:
     configs:
       default:
