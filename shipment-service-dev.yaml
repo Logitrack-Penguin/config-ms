@@ -10,6 +10,33 @@ spring:
     password: "${DB_PASSWORD:12345}"
     driver-class-name: "com.mysql.cj.jdbc.Driver"
 
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true                # sin esto el fallback se ignora
+      client:
+        config:
+          courier-service:
+            connect-timeout: 2000    # ms
+            read-timeout: 3000       # ms: nunca esperar indefinidamente
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 10                  # evalúa las últimas 10 llamadas
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50               # si falla el 50% → abre el circuito
+        wait-duration-in-open-state: 15s         # tiempo sin llamar a courier
+        permitted-number-of-calls-in-half-open-state: 3
+        automatic-transition-from-open-to-half-open-enabled: true
+        ignore-exceptions:
+          - ar.edu.unju.fi.arquitecturas.logitrack.shipment.client.exception.CourierNotFoundException
+  timelimiter:
+    configs:
+      default:
+        timeout-duration: 4s
 logging:
   level:
     root: INFO
