@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: "${SERVER_PORT:8081}"
 
 spring:
   application:
@@ -10,14 +10,25 @@ spring:
     password: "${DB_PASSWORD:12345}"
     driver-class-name: "com.mysql.cj.jdbc.Driver"
 
-jwt:
-  secret: "${JWT_SECRET:clave_secreta_temporal_muy_larga_para_desarrollo}"
-  expiration: 86400000
+logitrack:
+  jwt:
+    secret: "${JWT_SECRET}"
+    expiration-ms: "${JWT_EXPIRATION_MS:3600000}"
+    issuer: "${JWT_ISSUER:logitrack-security-service}"
+  bootstrap-admin:
+    username: "${ADMIN_USERNAME:}"
+    password: "${ADMIN_PASSWORD:}"
+    email: "${ADMIN_EMAIL:admin@logitrack.local}"
+
+springdoc:
+  swagger-ui:
+    path: "${SWAGGER_PATH:/swagger-ui.html}"
 
 logging:
   level:
     root: INFO
     ar.edu.unju.fi.arquitecturas.logitrack.securityservice: DEBUG
+
 eureka:
   client:
     register-with-eureka: true

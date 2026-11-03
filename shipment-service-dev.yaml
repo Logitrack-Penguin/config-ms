@@ -14,7 +14,7 @@ logging:
   level:
     root: INFO
     ar.edu.unju.fi.arquitecturas.logitrack.shipmentservice: DEBUG
-# Registro y descubrimiento del microservicio en Eureka
+
 eureka:
   client:
     register-with-eureka: true
