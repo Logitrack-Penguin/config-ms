@@ -1,0 +1,96 @@
+server:
+  port: 8066
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowed-origin-patterns: "${CORS_ALLOWED_ORIGINS:http://localhost:*}"
+                allowed-methods: [GET, POST, PUT, PATCH, DELETE, OPTIONS]
+                allowed-headers: "*"
+                allow-credentials: true
+          routes:
+            - id: shipment-route
+              uri: lb://shipment-service
+              predicates:
+                - Path=/applications/apishipment/**
+              filters:
+                - RewritePath=/applications/apishipment/(?<segment>.*), /$\{segment}
+
+            - id: courier-route
+              uri: lb://courier-service
+              predicates:
+                - Path=/applications/apicourier/**
+              filters:
+                - RewritePath=/applications/apicourier/(?<segment>.*), /$\{segment}
+
+            - id: security-route
+              uri: lb://security-service
+              predicates:
+                - Path=/applications/apisecurity/**
+              filters:
+                - RewritePath=/applications/apisecurity/(?<segment>.*), /$\{segment}
+
+logging:
+  level:
+    root: INFO
+    ar.edu.unju.fi.arquitecturas.logitrack.apigateway: DEBUG
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8065/eureka/}
+  instance:
+    prefer-ip-address: true
+
+# =====================================================================
+# Seguridad centralizada (JwtAuthenticationGlobalFilter)
+# =====================================================================
+logitrack:
+  jwt:
+    secret: "${JWT_SECRET}"
+    issuer: "${JWT_ISSUER:logitrack-security-service}"
+  gateway:
+    security:
+      public-paths:
+        - /applications/apisecurity/**
+        - /actuator/health
+      protected-paths:
+        - /applications/apishipment/**
+        - /applications/apicourier/**
+      rules:
+        # ---------------- shipment-service: clientes ----------------
+        - path: /applications/apishipment/api/v1/clientes/{id}
+          methods: [GET]
+          roles: [ADMIN, CLIENTE]
+        - path: /applications/apishipment/api/v1/clientes/**
+          roles: [ADMIN]
+        # ---------------- shipment-service: envíos ----------------
+        - path: /applications/apishipment/api/v1/envios
+          methods: [POST]
+          roles: [ADMIN, CLIENTE]
+        - path: /applications/apishipment/api/v1/envios/**
+          methods: [GET]
+          roles: [ADMIN, CLIENTE, REPARTIDOR]
+        - path: /applications/apishipment/api/v1/envios/*/estado
+          methods: [PUT, PATCH]
+          roles: [ADMIN, REPARTIDOR]
+        - path: /applications/apishipment/api/v1/envios/**
+          roles: [ADMIN]
+        # ---------------- courier-service: repartidores ----------------
+        - path: /applications/apicourier/api/v1/repartidores/*/estado
+          methods: [PUT]
+          roles: [ADMIN, REPARTIDOR]
+        - path: /applications/apicourier/api/v1/repartidores/**
+          methods: [GET]
+          roles: [ADMIN, REPARTIDOR]
+        - path: /applications/apicourier/api/v1/repartidores/**
+          roles: [ADMIN]

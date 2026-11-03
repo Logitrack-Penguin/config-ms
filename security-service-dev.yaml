@@ -12,7 +12,7 @@ spring:
 
 logitrack:
   jwt:
-    secret: "${JWT_SECRET:clave_secreta_temporal_muy_larga_para_desarrollo}"
+    secret: "${JWT_SECRET}"
     expiration-ms: "${JWT_EXPIRATION_MS:3600000}"
     issuer: "${JWT_ISSUER:logitrack-security-service}"
   bootstrap-admin:
