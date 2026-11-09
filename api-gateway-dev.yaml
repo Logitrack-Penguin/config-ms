@@ -11,10 +11,15 @@ spring:
           globalcors:
             cors-configurations:
               '[/**]':
-                allowed-origin-patterns: "${CORS_ALLOWED_ORIGINS:http://localhost:*}"
+                # Origenes exactos del frontend: 5173 = Vite (desarrollo), 3000 = contenedor Nginx (Docker)
+                allowed-origins: "${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}"
+                # PATCH es necesario para /cancelar y /estado
                 allowed-methods: [GET, POST, PUT, PATCH, DELETE, OPTIONS]
-                allowed-headers: "*"
-                allow-credentials: true
+                allowed-headers: [Authorization, Content-Type]
+                # Sin cookies (token Bearer en sessionStorage, decision D1/D9)
+                allow-credentials: false
+                # El navegador cachea el preflight 1 hora
+                max-age: 3600
           routes:
             - id: shipment-route
               uri: lb://shipment-service
