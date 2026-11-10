@@ -10,6 +10,21 @@ spring:
     password: "${DB_PASSWORD:12345}"
     driver-class-name: "com.mysql.cj.jdbc.Driver"
 
+  # RabbitMQ (LT4-34): shipment consume los eventos de baja de repartidores de courier.
+  rabbitmq:
+    host: ${RABBITMQ_HOST:rabbitmq}
+    port: 5672
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    listener:
+      simple:
+        default-requeue-rejected: false   # un mensaje fallido NO vuelve a la cola: va a la DLQ
+        retry:
+          enabled: true
+          max-attempts: 4                 # 1 intento + 3 reintentos
+          initial-interval: 1s            # esperas: 1s, 2s, 4s
+          multiplier: 2
+
   cloud:
     openfeign:
       circuitbreaker:
@@ -41,6 +56,13 @@ logging:
   level:
     root: INFO
     ar.edu.unju.fi.arquitecturas.logitrack.shipmentservice: DEBUG
+
+# Interruptor de la mensajería (LT4-34). Apagado por defecto: el docker-compose lo prende con
+# MESSAGING_ENABLED=true junto con el contenedor de RabbitMQ. Con false, el servicio funciona igual
+# que antes (no se crea la cola ni el consumidor).
+logitrack:
+  messaging:
+    enabled: ${MESSAGING_ENABLED:false}
 
 eureka:
   client:

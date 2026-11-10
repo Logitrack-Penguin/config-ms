@@ -10,10 +10,24 @@ spring:
     password: "${DB_PASSWORD:12345}"
     driver-class-name: "com.mysql.cj.jdbc.Driver"
 
+  # RabbitMQ (LT4-34): courier publica un evento cuando un repartidor se desactiva o se elimina.
+  rabbitmq:
+    host: ${RABBITMQ_HOST:rabbitmq}
+    port: 5672
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    publisher-confirm-type: correlated    # RabbitMQ confirma que recibió cada mensaje
+
 logging:
   level:
     root: INFO
     ar.edu.unju.fi.arquitecturas.logitrack.courierservice: DEBUG
+
+# Interruptor de la mensajería (LT4-34). Apagado por defecto: el docker-compose lo prende con
+# MESSAGING_ENABLED=true junto con el contenedor de RabbitMQ.
+logitrack:
+  messaging:
+    enabled: ${MESSAGING_ENABLED:false}
 
 eureka:
   client:
